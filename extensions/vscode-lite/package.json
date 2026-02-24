@@ -1,0 +1,79 @@
+{
+  "name": "continue-lite-autocomplete",
+  "displayName": "Continue Lite - Autocomplete",
+  "description": "A slimmed-down Continue extension: YAML config + Tab Autocomplete only",
+  "version": "0.1.0",
+  "publisher": "ContinueDev",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/continuedev/continue"
+  },
+  "engines": {
+    "vscode": "^1.70.0",
+    "node": ">=20.19.0"
+  },
+  "engine-strict": true,
+  "extensionKind": ["workspace"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Continue Lite",
+      "properties": {
+        "continueLite.enableTabAutocomplete": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable Continue Lite tab autocomplete."
+        },
+        "continueLite.ollamaBaseUrl": {
+          "type": "string",
+          "default": "http://localhost:11434/",
+          "description": "Base URL for the local Ollama server."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "continueLite.forceAutocomplete",
+        "title": "Continue Lite: Force Autocomplete",
+        "category": "Continue Lite"
+      }
+    ]
+  },
+  "scripts": {
+    "build:deps": "npm --prefix ../../packages/config-types install && npm --prefix ../../packages/config-types run build && npm --prefix ../../packages/config-yaml install && npm --prefix ../../packages/config-yaml run build",
+    "esbuild-base": "node scripts/esbuild.js",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "prevscode:prepublish": "npm run build:deps",
+    "tsc:check": "tsc -p ./ --noEmit",
+    "test": "vitest run",
+    "pretest": "npm run build:deps",
+    "package": "node scripts/package.js",
+    "e2e:compile": "tsc -p ./tsconfig.e2e.json",
+    "e2e:create-storage": "mkdir -p ./e2e/storage",
+    "e2e:get-chromedriver": "extest get-chromedriver --storage ./e2e/storage --code_version 1.99.0",
+    "e2e:get-vscode": "extest get-vscode --storage ./e2e/storage --code_version 1.99.0",
+    "e2e:copy-vsix": "chmod +x ./e2e/get-latest-vsix.sh && bash ./e2e/get-latest-vsix.sh",
+    "e2e:install-vsix": "extest install-vsix -f ./e2e/vsix/continue-lite.vsix --extensions_dir ./e2e/.test-extensions --storage ./e2e/storage",
+    "e2e:test": "NODE_ENV=e2e CONTINUE_LITE_E2E_LOG_FILE=$(pwd)/e2e/storage/continue-lite-e2e.log extest run-tests ${TEST_FILE:-'./e2e/_output/tests/*.test.js'} --code_version 1.99.0 --code_settings settings.json --extensions_dir ./e2e/.test-extensions --storage ./e2e/storage",
+    "e2e:clean": "rm -rf ./e2e/_output ./e2e/storage",
+    "e2e:all-non-mac": "npm run package && npm run e2e:compile && npm run e2e:create-storage && npm run e2e:get-chromedriver && npm run e2e:get-vscode && npm run e2e:copy-vsix && npm run e2e:install-vsix && CONTINUE_GLOBAL_DIR=e2e/test-continue-ollama npm run e2e:test && npm run e2e:clean"
+  },
+  "devDependencies": {
+    "@types/chai": "^5.0.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.11.19",
+    "@types/vscode": "1.70",
+    "@vscode/vsce": "^2.22.0",
+    "chai": "^4.5.0",
+    "esbuild": "0.17.19",
+    "typescript": "^5.6.3",
+    "vitest": "^3.1.4",
+    "vscode-extension-tester": "8.14.1"
+  },
+  "dependencies": {
+    "@continuedev/config-yaml": "file:../../packages/config-yaml"
+  }
+}

@@ -1,0 +1,22 @@
+# Keep the VSIX minimal: only runtime output in `out/` is needed.
+
+# Source / tooling
+src/**
+scripts/**
+tsconfig*.json
+vitest.config.*
+settings.json
+package-lock.json
+
+# Tests + fixtures
+e2e/**
+
+# Build artifacts
+build/**
+node_modules/**
+*.vsix
+*.log
+
+# Editor/project metadata
+.vscode/**
+.github/**

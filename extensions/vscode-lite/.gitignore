@@ -1,0 +1,10 @@
+node_modules/
+out/
+build/
+*.vsix
+*.log
+
+e2e/_output/
+e2e/storage/
+e2e/.test-extensions/
+e2e/vsix/
